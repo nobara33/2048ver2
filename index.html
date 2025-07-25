@@ -55,6 +55,14 @@
     .tile-512 { background: #edc850; color: white; }
     .tile-1024 { background: #edc53f; color: white; }
     .tile-2048 { background: #edc22e; color: white; }
+    .tile-4096,
+    .tile-8192,
+    .tile-16384,
+    .tile-32768,
+    .tile-65536 {
+      background: black;
+      color: white;
+    }
 
     #side-panel {
       width: 260px;
@@ -130,7 +138,7 @@
     let score = 0;
     let previousBoard = null;
     let previousScore = 0;
-    let hasWon = false;
+    let maxAchieved = 0;
 
     function setupBoard() {
       const boardElement = document.getElementById('game-board');
@@ -138,7 +146,7 @@
       board = [];
       score = 0;
       previousBoard = null;
-      hasWon = false;
+      maxAchieved = 0;
       updateScore(0);
       updateStatus('');
 
@@ -180,13 +188,25 @@
     }
 
     function updateBoard() {
+      let currentMax = 0;
       for (let i = 0; i < boardSize; i++) {
         for (let j = 0; j < boardSize; j++) {
           const value = board[i][j];
           const tile = document.getElementById(`tile-${i}-${j}`);
           tile.textContent = value !== 0 ? value : '';
           tile.className = `tile tile-${value}`;
+          if (value > currentMax) currentMax = value;
         }
+      }
+
+      if (currentMax > maxAchieved) {
+        maxAchieved = currentMax;
+        if (currentMax === 2048) updateStatus("You did it！2048を超えて、限界へ挑め！");
+        else if (currentMax === 4096) updateStatus("Amazing！4096到達！あなたは選ばれし者。");
+        else if (currentMax === 8192) updateStatus("Incredible！8192達成。神話が始まる。");
+        else if (currentMax === 16384) updateStatus("伝説級！16384の境地へようこそ。");
+        else if (currentMax === 32768) updateStatus("異次元！32768が見えてきた。");
+        else if (currentMax === 65536) updateStatus("UNBELIEVABLE！65536達成。あなたは次元を超えた！");
       }
     }
 
@@ -245,12 +265,6 @@
         addRandomTile();
         updateBoard();
 
-        // 2048達成チェック
-        if (!hasWon && board.flat().includes(2048)) {
-          updateStatus("You did it！2048を超えて、限界へ挑め！");
-          hasWon = true;
-        }
-
         if (checkGameOver()) {
           updateStatus("Game Over!");
         }
@@ -270,7 +284,7 @@
 
     document.addEventListener('keydown', (e) => {
       if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-        e.preventDefault();  // スクロール防止
+        e.preventDefault();
       }
       switch (e.key) {
         case 'ArrowLeft': move('left'); break;
@@ -297,5 +311,4 @@
     setupBoard();
   </script>
 </body>
-<p><a href="https://nobara33.github.io/">← トップページに戻る</a></p> 
 </html>
