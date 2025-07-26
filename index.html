@@ -59,7 +59,8 @@
     .tile-8192,
     .tile-16384,
     .tile-32768,
-    .tile-65536 {
+    .tile-65536,
+    .tile-131072 {
       background: black;
       color: white;
     }
@@ -139,6 +140,7 @@
     let previousBoard = null;
     let previousScore = 0;
     let maxAchieved = 0;
+    let gameEnded = false;
 
     function setupBoard() {
       const boardElement = document.getElementById('game-board');
@@ -147,6 +149,7 @@
       score = 0;
       previousBoard = null;
       maxAchieved = 0;
+      gameEnded = false;
       updateScore(0);
       updateStatus('');
 
@@ -207,6 +210,10 @@
         else if (currentMax === 16384) updateStatus("伝説級！16384の境地へようこそ。");
         else if (currentMax === 32768) updateStatus("異次元！32768が見えてきた。");
         else if (currentMax === 65536) updateStatus("UNBELIEVABLE！65536達成。あなたは次元を超えた！");
+        else if (currentMax === 131072) {
+          updateStatus("✩CONGRATULATIONS！131072に到達。伝説がここに完結した。");
+          gameEnded = true;
+        }
       }
     }
 
@@ -215,7 +222,7 @@
     }
 
     function move(dir) {
-      if (checkGameOver()) return;
+      if (gameEnded || checkGameOver()) return;
 
       previousBoard = deepCopyBoard(board);
       previousScore = score;
@@ -283,7 +290,8 @@
     }
 
     document.addEventListener('keydown', (e) => {
-      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+      if (gameEnded) return;
+      if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
         e.preventDefault();
       }
       switch (e.key) {
@@ -305,11 +313,12 @@
         updateScore(0);
         updateBoard();
         updateStatus('');
+        gameEnded = false;
       }
     });
 
     setupBoard();
   </script>
-</body>
+</body> 
 <p><a href="https://nobara33.github.io/">← トップページに戻る</a></p> 
 </html>
